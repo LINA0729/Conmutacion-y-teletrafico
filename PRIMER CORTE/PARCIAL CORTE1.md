@@ -2,7 +2,7 @@
 
 ## **PRIMER PUNTO**
 
-A. Explicar la diferencia fundamental entre la latencia y el jitter ¿cual de estas 2 metricas tendria un impacto mas negativo en una llamada de VoIP y porque?
+### A. Explicar la diferencia fundamental entre la latencia y el jitter ¿cual de estas 2 metricas tendria un impacto mas negativo en una llamada de VoIP y porque?
 
 La latencia es el tiempo que un paquete demora en desplazarse desde el emisor hasta el receptor.
 El jitter es la fluctuación en el tiempo entre paquetes.

@@ -5,18 +5,15 @@
 ### Integrantes
 
 * Lina Marcela Contreras Sanabria
-* (Agregar integrantes del grupo si aplica)
-
 ---
 
 # Introducción
 
-La virtualización mediante contenedores se ha convertido en una herramienta fundamental en el desarrollo de software, redes y sistemas distribuidos. Docker permite ejecutar aplicaciones en entornos aislados llamados contenedores, lo que facilita la replicación de escenarios complejos sin necesidad de instalar múltiples dependencias en el sistema operativo principal.
+En el desarrollo de software, redes y sistemas distribuidos, la virtualización mediante contenedores se ha vuelto una herramienta clave. Docker posibilita la ejecución de aplicaciones en entornos separados, conocidos como contenedores, lo que simplifica la duplicación de situaciones complejas sin tener que instalar varias dependencias en el sistema operativo principal.
 
-En este taller se exploran diferentes aplicaciones de Docker en el área de redes y telecomunicaciones. Primero se analiza el funcionamiento básico de Docker ejecutando un contenedor que reproduce un video en la terminal. Posteriormente se implementa un entorno de simulación utilizando ROS y Gazebo para robots móviles. Finalmente, se estudian conceptos fundamentales de redes como el protocolo ARP, la latencia y el jitter mediante contenedores Docker y herramientas de análisis de tráfico como Wireshark.
+Este taller examina diversas maneras de usar Docker en el campo de las telecomunicaciones y las redes. Inicialmente, se examina la operación fundamental de Docker mediante la ejecución de un contenedor que reproduce un video en la terminal. Luego se utiliza Gazebo y ROS para robots móviles con el fin de implementar un entorno de simulación. Por último, se examinan nociones básicas de redes, como el jitter, la latencia y el protocolo ARP, utilizando contenedores Docker y herramientas para analizar el tráfico, como Wireshark.
 
-El objetivo principal es comprender cómo Docker puede utilizarse para crear entornos controlados que permitan estudiar el comportamiento de protocolos de red y sistemas robóticos.
-
+El objetivo principal es comprender cómo se puede utilizar Docker para crear entornos controlados que permitan estudiar el comportamiento de los protocolos de red y los sistemas robóticos .
 ---
 
 # Punto 1 – Instalación y uso de Docker
@@ -28,8 +25,9 @@ Para el desarrollo del taller se utilizó Docker Desktop en un sistema operativo
 ### Paso 1 – Descargar Docker
 
 Se descargó Docker Desktop desde la página oficial:
-
-https://www.docker.com/products/docker-desktop
+[
+https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/)
+<img width="1575" height="815" alt="image" src="https://github.com/user-attachments/assets/18d4270d-0965-4b0e-a2f8-97c946312abc" />
 
 ### Paso 2 – Instalación
 
@@ -40,6 +38,7 @@ Durante la instalación se habilitó la opción de integración con WSL2, lo que
 Se verificó el correcto funcionamiento de Docker ejecutando el comando:
 
 docker --version
+<img width="483" height="72" alt="image" src="https://github.com/user-attachments/assets/db762b81-30ec-4c20-aa13-80e04e6c1a67" />
 
 Este comando permite confirmar que Docker está instalado correctamente en el sistema.
 
@@ -79,9 +78,9 @@ Es el archivo de video que se reproduce dentro del contenedor.
 
 ## Resultado obtenido
 
-Al ejecutar el comando, Docker descarga automáticamente la imagen desde Docker Hub y ejecuta un contenedor temporal. Dentro del contenedor se ejecuta VLC en modo consola y se reproduce un video de cuenta regresiva en formato ASCII directamente en la terminal.
+Se ejecuta el comando , Docker descarga automáticamente la imagen de Docker Hub y lanza un contenedor temporal . Dentro del contenedor, VLC se ejecuta en modo consola ,modo yy un vídeo de cuenta regresiva en formato ASCII se reproduce directamente en la terminal.un vídeo de cuenta regresiva en formato ASCII se reproduce directamente en el terminal
 
-Este ejercicio permite comprender el funcionamiento básico de los contenedores Docker y cómo pueden ejecutar aplicaciones sin necesidad de instalarlas en el sistema principal.
+El ejercicio le permite comprender el funcionamiento básico de los contenedores Docker y cómo ejecutar aplicaciones sin instalarlas en el sistema principal .
 
 ---
 

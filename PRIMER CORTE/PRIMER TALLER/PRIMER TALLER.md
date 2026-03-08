@@ -9,12 +9,9 @@
 
 # Introducción
 
-En el desarrollo de software, redes y sistemas distribuidos, la virtualización mediante contenedores se ha vuelto una herramienta clave. Docker posibilita la ejecución de aplicaciones en entornos separados, conocidos como contenedores, lo que simplifica la duplicación de situaciones complejas sin tener que instalar varias dependencias en el sistema operativo principal.
+Docker permite que aplicaciones se ejecuten en entornos separados, llamados contenedores, lo cual hace más fácil replicar circunstancias complicadas sin la necesidad de instalar numerosas dependencias en el sistema operativo principal.
 
-Este taller examina diversas maneras de usar Docker en el campo de las telecomunicaciones y las redes. Inicialmente, se examina la operación fundamental de Docker mediante la ejecución de un contenedor que reproduce un video en la terminal. Luego se utiliza Gazebo y ROS para robots móviles con el fin de implementar un entorno de simulación. Por último, se examinan nociones básicas de redes, como el jitter, la latencia y el protocolo ARP, utilizando contenedores Docker y herramientas para analizar el tráfico, como Wireshark.
-
-El objetivo principal es comprender cómo se puede utilizar Docker para crear entornos controlados que permitan estudiar el comportamiento de los protocolos de red y los sistemas robóticos .
----
+El uso de Docker en telecomunicaciones y redes es examinado en este taller. Su funcionamiento se analiza mediante la ejecución de un contenedor que reproduce un video en la terminal. Además, se usan Gazebo y ROS para construir un ambiente de simulación de robots móviles. Asimismo, se analizan nociones de redes como ARP, jitter y latencia mediante el uso de herramientas de análisis de tráfico como Wireshark. El propósito principal es entender la forma en que Docker posibilita la creación de ambientes controlados para estudiar cómo se comportan los protocolos de red.los de red y los sistemas robóticos.
 
 # Punto 1 – Instalación y uso de Docker
 
@@ -38,11 +35,10 @@ Durante la instalación se habilitó la opción de integración con WSL2, lo que
 Se verificó el correcto funcionamiento de Docker ejecutando el comando:
 
 docker --version
+
 <img width="483" height="72" alt="image" src="https://github.com/user-attachments/assets/db762b81-30ec-4c20-aa13-80e04e6c1a67" />
 
 Este comando permite confirmar que Docker está instalado correctamente en el sistema.
-
----
 
 # Punto 1A – Ejecución de contenedor con reproducción de video
 
@@ -78,11 +74,12 @@ Es el archivo de video que se reproduce dentro del contenedor.
 
 ## Resultado obtenido
 
-Se ejecuta el comando , Docker descarga automáticamente la imagen de Docker Hub y lanza un contenedor temporal . Dentro del contenedor, VLC se ejecuta en modo consola ,modo yy un vídeo de cuenta regresiva en formato ASCII se reproduce directamente en la terminal.un vídeo de cuenta regresiva en formato ASCII se reproduce directamente en el terminal
+Cuando se ejecuta el comando, Docker descarga la imagen de Docker Hub automáticamente y luego inicia un contenedor temporal. En el contenedor, VLC opera en modo consola y reproduce directamente un video de cuenta regresiva en formato ASCII en la terminal.
 
-El ejercicio le permite comprender el funcionamiento básico de los contenedores Docker y cómo ejecutar aplicaciones sin instalarlas en el sistema principal .
+Con el ejercicio, entendemos cómo funcionan los contenedores Docker a nivel básico y la manera en que se ejecutan aplicaciones sin necesidad de instalarlas en el sistema principal.
 
----
+Evidencia: https://youtu.be/T7y5Uli4L3E
+
 
 # Punto 1B – Simulación con ROS y Gazebo
 

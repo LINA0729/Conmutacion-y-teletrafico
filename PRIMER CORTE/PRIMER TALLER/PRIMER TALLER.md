@@ -5,7 +5,6 @@
 ### Integrantes
 
 * Lina Marcela Contreras Sanabria
----
 
 # Introducción
 

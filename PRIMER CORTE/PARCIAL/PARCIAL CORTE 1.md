@@ -100,7 +100,7 @@ La cabecera IPv6 reemplaza la cabecera IPv4. Y tendria una cabecera más simple 
 ### A. Desde la CMD de Windows, ejecutar el comando pathping.
 <img width="667" height="397" alt="image" src="https://github.com/user-attachments/assets/d8e69ea9-a7b9-4d60-a72e-b7b7fe2c1393" />
 
-*Explicar qué información proporciona este comando que no daría un ping o un tracert.**
+**Explicar qué información proporciona este comando que no daría un ping o un tracert.**
 
 El comando pathping permite analizar la ruta hacia un destino y además muestra latencia y pérdida de paquetes en cada salto de la red.
 

@@ -60,8 +60,10 @@ Ya que los Trap se utilizan para informar automáticamente sobre eventos, no par
 
 <img width="1048" height="218" alt="image" src="https://github.com/user-attachments/assets/d0b0c93b-0492-42cc-8d50-b2a9a22721dc" />
 
+
 ### A. Identificar y explicar cada uno de los campos de la cabecera ethernet. ¿Que significa el valor 0x0800 en el campo "Tipo"?.
 <img width="1048" height="218" alt="image" src="https://github.com/user-attachments/assets/a16caa4c-edf4-4d45-b8b6-fff531d30d33" />
+
 
 * MAC destino: dirección física del receptor.
 * MAC origen: dirección física del emisor.
@@ -72,6 +74,7 @@ El valor 0x0800 indica que el protocolo encapsulado es IPv4.
 ### B. En la cabecera IPv4, ¿qué significan los campos Protocolo y TTL? ¿Por qué es importante el TTL en red?
 <img width="1048" height="218" alt="image" src="https://github.com/user-attachments/assets/2aa024a1-8a60-4554-8078-ccad9cf3a6ca" />
 
+
 Protocolo:
 Señala qué protocolo de transporte está en uso (UDP o TCP, por ejemplo).
 
@@ -80,6 +83,7 @@ Señala la cantidad máxima de saltos que un paquete puede realizar antes de ser
 
 ### C. En la cabecera TCP, explicar la función de los flags ACK y PSH. ¿Qué indica el "Puerto Destino: 80" sobre el servicio al que se intenta acceder?
 <img width="1059" height="218" alt="image" src="https://github.com/user-attachments/assets/47f88f6d-57a0-43cb-9e61-020f1ee77fcd" />
+
 
 ACK:
 Confirma que un paquete fue recibido correctamente.
@@ -99,6 +103,7 @@ La cabecera IPv6 reemplaza la cabecera IPv4. Y tendria una cabecera más simple 
 
 ### A. Desde la CMD de Windows, ejecutar el comando pathping.
 <img width="667" height="397" alt="image" src="https://github.com/user-attachments/assets/d8e69ea9-a7b9-4d60-a72e-b7b7fe2c1393" />
+
 
 **Explicar qué información proporciona este comando que no daría un ping o un tracert.**
 

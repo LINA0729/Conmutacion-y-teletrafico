@@ -92,6 +92,7 @@ La plataforma de desarrollo para robots conocida como ROS (Robot Operating Syste
 
 Se creó el archivo llamado Dockerfile-ros con el siguiente contenido:
 
+```bash
 FROM osrf/ros:noetic-desktop-full
 
 RUN apt update && apt install -y 
@@ -99,12 +100,15 @@ ros-noetic-gazebo-ros
 ros-noetic-gazebo-ros-pkgs
 
 CMD ["bash"]
-
-Este archivo define una imagen basada en ROS Noetic con soporte para Gazebo.
+```
+<img width="548" height="373" alt="image" src="https://github.com/user-attachments/assets/094c4150-d50d-40f0-bda8-7ad3cded6b52" />
 
 ## Construcción de la imagen
 
-docker build -t ros-gazebo -f Dockerfile-ros .
+```bash
+docker build -t ros-gazebo -f Dockerfile-ros 
+```
+<img width="1017" height="265" alt="image" src="https://github.com/user-attachments/assets/d5904dc2-63fb-4c1c-a670-e6f8b6d27600" />
 
 Este comando crea una nueva imagen llamada ros-gazebo.
 

@@ -114,17 +114,17 @@ Este comando crea una nueva imagen llamada ros-gazebo.
 
 ## Ejecución del contenedor
 
+```bash
 docker run -it --net=host ros-gazebo
+```
+<img width="1255" height="380" alt="image" src="https://github.com/user-attachments/assets/b2617c02-edfa-47d5-a660-4472d62e6fd0" />
 
 Una vez iniciado el contenedor se ejecuta:
 
 roscore
 
 Esto inicia el núcleo de ROS que permite la comunicación entre nodos.
-
-En otra terminal se puede iniciar Gazebo para visualizar la simulación.
-
----
+<img width="1212" height="632" alt="image" src="https://github.com/user-attachments/assets/6e70ee0e-789e-4870-8160-3cbec3387f66" />
 
 # Punto 1C – Simulación de robot con LIDAR y SLAM
 
@@ -136,6 +136,7 @@ SLAM significa Simultaneous Localization and Mapping, y permite a un robot const
 
 Se creó un archivo llamado Dockerfile-turtlebot con el siguiente contenido:
 
+```bash
 FROM osrf/ros:noetic-desktop-full
 
 RUN apt update && apt install -y 
@@ -146,10 +147,17 @@ ros-noetic-turtlebot3-gazebo
 ENV TURTLEBOT3_MODEL=burger
 
 CMD ["bash"]
+```
+<img width="783" height="400" alt="image" src="https://github.com/user-attachments/assets/dc94e5f7-10ff-4a9a-ace5-4107735312fc" />
+
 
 ## Construcción de la imagen
 
-docker build -t turtlebot3 -f Dockerfile-turtlebot .
+```bash
+docker build -t turtlebot3 -f Dockerfile-turtlebot
+```
+<img width="937" height="502" alt="image" src="https://github.com/user-attachments/assets/85557e44-5551-4046-87eb-4d768786629d" />
+
 
 ## Ejecución de la simulación
 
@@ -167,7 +175,7 @@ Finalmente se abre RViz para visualizar el mapa generado por el robot a partir d
 
 Este ejercicio permite observar cómo un robot puede explorar un entorno y construir un mapa en tiempo real.
 
----
+
 
 # Punto 2 – Descubriendo el protocolo ARP
 

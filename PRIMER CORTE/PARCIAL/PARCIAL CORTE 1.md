@@ -1,4 +1,4 @@
-<img width="1048" height="218" alt="image" src="https://github.com/user-attachments/assets/94f242c8-905f-4abb-9bb9-dd92050aebb6" /># **PARCIAL**
+# **PARCIAL**
 
 ## **PRIMER PUNTO**
 

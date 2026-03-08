@@ -125,64 +125,20 @@ Esto hace posible determinar en qué parte de la red hay fallas.
 
 ### B. Para monitorear un router de la oficina, decides usar SNMP. El router soporta SNMPv2c con la comunidad "public" de solo lectura.
 
+**¿Qué comando de Windows (o herramienta de línea de comandos) podría utilizar para "caminar" por el árbol MIB y obtener todos los valores de la interfaz del router en la IP 192.168.1.1?**
 
-¿Qué comando de Windows (o herramienta de línea de comandos) podría utilizar para "caminar" por el árbol MIB y obtener todos los valores de la interfaz del router en la IP 192.168.1.1?
+El comando que se puede usar para recorrer el árbol MIB del router es:
 
+snmpwalk -v2c -c public 192.168.1.1
 
-
-
-
-
-
+Este comando consulta el agente SNMP del router y obtiene todos los valores disponibles en la MIB.
 
 
+**Si el router envía un mensaje “authenticationFailure” trap al gestor SNMP, ¿Qué evento lo ha provocado y cuál es la ventaja de recibir un Trap en lugar de estar consultando constantemente (polling) el estado del router?**
 
+El mensaje authenticationFailure trap tiene lugar cuando un equipo trata de acceder al agente SNMP con una comunidad no autorizada o equivocada.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Si el router envía un mensaje “authenticationFailure” trap al gestor SNMP, ¿Qué evento lo ha provocado y cuál es la ventaja de recibir un Trap en lugar de estar consultando constantemente (polling) el estado del router?
-
-
+Una de las ventajas de obtener un Trap es que, cuando tiene lugar un acontecimiento, el equipo envía una notificación automática al administrador SNMP. Esto evita que sea necesario consultar continuamente la condición del router a través de polling, lo cual disminuye el tráfico y optimiza la eficacia de la supervisión.
 
 
 

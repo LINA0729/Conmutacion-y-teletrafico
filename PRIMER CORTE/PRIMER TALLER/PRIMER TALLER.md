@@ -33,7 +33,9 @@ Durante la instalación se habilitó la opción de integración con WSL2, lo que
 
 Se verificó el correcto funcionamiento de Docker ejecutando el comando:
 
+```bash
 docker --version
+```
 
 <img width="483" height="72" alt="image" src="https://github.com/user-attachments/assets/db762b81-30ec-4c20-aa13-80e04e6c1a67" />
 

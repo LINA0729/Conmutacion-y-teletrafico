@@ -86,9 +86,7 @@ Evidencia: https://youtu.be/T7y5Uli4L3E
 
 # Punto 1B – Simulación con ROS y Gazebo
 
-ROS (Robot Operating System) es una plataforma de desarrollo para robots que permite integrar sensores, controladores y simuladores. Gazebo es un simulador físico que permite visualizar robots en entornos virtuales.
-
-Para este ejercicio se creó un archivo Dockerfile que permite construir una imagen con ROS y Gazebo instalados.
+La plataforma de desarrollo para robots conocida como ROS (Robot Operating System) facilita la integración de simuladores, controladores y sensores. Gazebo es un simulador físico que posibilita la visualización de robots en ambientes virtuales.
 
 ## Creación del Dockerfile
 

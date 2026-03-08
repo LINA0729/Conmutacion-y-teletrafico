@@ -45,32 +45,34 @@ Este comando permite confirmar que Docker está instalado correctamente en el si
 
 Se ejecutó el siguiente comando en la terminal:
 
+```bash
 docker run --rm -it wernight/funbox cvlc --no-audio -V caca /examples/countdown.mp4
+```
 
 ## Explicación del comando
 
-docker run
+**docker run:**
 Permite ejecutar un contenedor a partir de una imagen de Docker.
 
---rm
+**--rm:**
 Elimina automáticamente el contenedor una vez finalizada la ejecución.
 
--it
+**-it:**
 Permite ejecutar el contenedor en modo interactivo.
 
-wernight/funbox
+**wernight/funbox:**
 Es la imagen de Docker utilizada. Contiene diversas herramientas de consola.
 
-cvlc
+**cvlc:**
 Es la versión de VLC que funciona en modo terminal.
 
---no-audio
+**--no-audio:**
 Desactiva el sonido del video.
 
--V caca
+**-V caca:**
 Especifica el modo de visualización del video.
 
-/examples/countdown.mp4
+**/examples/countdown.mp4:**
 Es el archivo de video que se reproduce dentro del contenedor.
 
 ## Resultado obtenido

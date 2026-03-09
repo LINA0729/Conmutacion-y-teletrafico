@@ -125,11 +125,14 @@ Esto hace posible determinar en qué parte de la red hay fallas.
 
 ### B. Para monitorear un router de la oficina, decides usar SNMP. El router soporta SNMPv2c con la comunidad "public" de solo lectura.
 
+
 **¿Qué comando de Windows (o herramienta de línea de comandos) podría utilizar para "caminar" por el árbol MIB y obtener todos los valores de la interfaz del router en la IP 192.168.1.1?**
 
 El comando que se puede usar para recorrer el árbol MIB del router es:
 
+```bash
 snmpwalk -v2c -c public 192.168.1.1
+```
 
 Este comando consulta el agente SNMP del router y obtiene todos los valores disponibles en la MIB.
 
@@ -140,6 +143,132 @@ El mensaje authenticationFailure trap tiene lugar cuando un equipo trata de acce
 
 Una de las ventajas de obtener un Trap es que, cuando tiene lugar un acontecimiento, el equipo envía una notificación automática al administrador SNMP. Esto evita que sea necesario consultar continuamente la condición del router a través de polling, lo cual disminuye el tráfico y optimiza la eficacia de la supervisión.
 
+
+## **CUARTO PUNTO**
+
+## Paso 1 – Verificación de conectividad
+
+### **¿Qué comando usaría para verificar conectividad con GitHub y qué capa del modelo OSI utiliza?**
+
+```bash
+ping github.com
+```
+
+Verifica conectividad IP con el servidor.
+* Capa OSI: Red
+* Protocolo: ICMP
+
+### **¿Cómo obtiene el equipo la dirección IP de github.com?**
+
+El equipo utiliza el protocolo DNS para traducir el nombre de dominio a una dirección IP.
+
+Comando:
+```bash
+nslookup github.com
+```
+* Capa OSI: Aplicación
+* Protocolo: DNS
+
+### **Si el ping tiene latencia alta, ¿qué métrica se ve afectada?**
+
+Se afecta la latencia.  
+Esto puede hacer que el comando:
+```bash
+git push
+```
+sea más lento o inestable.
+
+
+## Paso 2 – Establecimiento de conexión
+
+### **¿Qué protocolo se usa para establecer la conexión con GitHub?**
+
+Se utiliza TCP, que garantiza una conexión confiable.
+TCP usa el proceso **Three-Way Handshake**:
+
+  1. SYN  
+  2. SYN-ACK  
+  3. ACK  
+
+* Capa OSI: Transporte
+* Puerto destino: 443 (HTTPS)
+
+### **¿Qué herramienta permite observar el tráfico TCP**
+
+Wireshark.
+
+Se puede usar un filtro como:
+ip.addr == IP_DE_GITHUB
+
+# Paso 3 – Encapsulamiento de datos
+
+### Pregunta
+¿Cómo se realiza el proceso de encapsulamiento de los datos?
+
+### Respuesta
+Los datos pasan por varias capas:
+
+Aplicación → Datos  
+Transporte → Segmentos TCP  
+Red → Paquetes IP  
+Enlace → Tramas Ethernet
+
+---
+
+### Pregunta
+¿Qué ocurre si hay pérdida de paquetes en la red?
+
+### Respuesta
+TCP activa retransmisión y control de congestión para enviar nuevamente los paquetes.
+
+Comando para detectar problemas:
+pathping github.com
+
+---
+
+### Pregunta
+¿Qué campo evita que los paquetes circulen indefinidamente?
+
+### Respuesta
+El campo **TTL (Time To Live)**.  
+Cada router reduce su valor hasta que llega a 0 y el paquete se descarta.
+
+---
+
+# Paso 4 – Confirmación de datos
+
+### Pregunta
+¿Cómo confirma GitHub la recepción de los datos?
+
+### Respuesta
+Mediante mensajes **ACK de TCP**, que confirman que los datos fueron recibidos correctamente.
+
+---
+
+### Pregunta
+¿Cómo se cierra la conexión TCP?
+
+### Respuesta
+Se realiza mediante el proceso de cierre **FIN / ACK** entre cliente y servidor.
+
+---
+
+# Documentación en Git
+
+### Pregunta
+¿Qué información debe documentarse en un commit?
+
+### Respuesta
+En Git se debe documentar:
+
+- Cambios realizados
+- Archivos modificados
+- Problema solucionado
+
+Ejemplo:
+
+feat: actualización del módulo de autenticación  
+Se corrige error en el inicio de sesión y se mejora la validación de usuarios.
 
 
 

@@ -200,12 +200,10 @@ Wireshark.
 Se puede usar un filtro como:
 ip.addr == IP_DE_GITHUB
 
-# Paso 3 – Encapsulamiento de datos
+## Paso 3 – Encapsulamiento de datos
 
-### Pregunta
-¿Cómo se realiza el proceso de encapsulamiento de los datos?
+### **¿Cómo se realiza el proceso de encapsulamiento de los datos?**
 
-### Respuesta
 Los datos pasan por varias capas:
 
 Aplicación → Datos  
@@ -213,80 +211,41 @@ Transporte → Segmentos TCP
 Red → Paquetes IP  
 Enlace → Tramas Ethernet
 
----
+### **¿Qué ocurre si hay pérdida de paquetes en la red?**
 
-### Pregunta
-¿Qué ocurre si hay pérdida de paquetes en la red?
-
-### Respuesta
 TCP activa retransmisión y control de congestión para enviar nuevamente los paquetes.
 
 Comando para detectar problemas:
+
+```bash
 pathping github.com
+```
 
----
+### **¿Qué campo evita que los paquetes circulen indefinidamente?**
 
-### Pregunta
-¿Qué campo evita que los paquetes circulen indefinidamente?
-
-### Respuesta
 El campo **TTL (Time To Live)**.  
 Cada router reduce su valor hasta que llega a 0 y el paquete se descarta.
 
----
+## Paso 4 – Confirmación de datos
 
-# Paso 4 – Confirmación de datos
+### **¿Cómo confirma GitHub la recepción de los datos?**
 
-### Pregunta
-¿Cómo confirma GitHub la recepción de los datos?
-
-### Respuesta
 Mediante mensajes **ACK de TCP**, que confirman que los datos fueron recibidos correctamente.
 
----
+### **¿Cómo se cierra la conexión TCP**
 
-### Pregunta
-¿Cómo se cierra la conexión TCP?
-
-### Respuesta
 Se realiza mediante el proceso de cierre **FIN / ACK** entre cliente y servidor.
 
----
+### **Si un administrador quisiera monitorear el tráfico generado por el git push usando SNMP, ¿qué métricas podría observar en el router y qué versión de SNMP usaría si necesita cifrado**?
 
-# Documentación en Git
+El administrador podría monitorear métricas como:
 
-### Pregunta
-¿Qué información debe documentarse en un commit?
+- Bytes transmitidos
+- Bytes recibidos
+- Paquetes enviados
+- Paquetes descartados
+- Tráfico de las interfaces de red
 
-### Respuesta
-En Git se debe documentar:
+Estas métricas se obtienen desde la **MIB del dispositivo mediante SNMP**.
 
-- Cambios realizados
-- Archivos modificados
-- Problema solucionado
-
-Ejemplo:
-
-feat: actualización del módulo de autenticación  
-Se corrige error en el inicio de sesión y se mejora la validación de usuarios.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Si se requiere seguridad y cifrado, se debe usar **SNMPv3**, ya que incluye autenticación y cifrado de la información.

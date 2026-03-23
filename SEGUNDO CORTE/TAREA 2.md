@@ -1,4 +1,4 @@
-# Cisco Networking Basics — Módulos 3 y 4
+Módulos 3 y 4
 
 ---
 

@@ -4,6 +4,8 @@
 
 El taller tuvo como fin implementar el protocolo **HSRP (Hot Standby Router Protocol)** a fin de dar redundancia a la puerta de enlace predeterminada de una red LAN. Este protocolo permite que dos routers trabajen juntos compartiendo una **IP virtual**, de forma que los hosts utilicen una única puerta de enlace lógica, independientemente de qué router esté activo.
 
+Los routers **R1 y R3** se configuraron como gateways redundantes para la red LAN en la topología propuesta, y el router **R2** actuaba como router intermedio hacia otras redes.
+
 ---
 
 ## Configuración realizada
@@ -18,8 +20,10 @@ La configuración hecha en los routers fue:
 - Prioridad de configuración
 - Habilitar la opción `preempt` para poder recuperar el router con mayor prioridad
 
+<img width="921" height="365" alt="image" src="https://github.com/user-attachments/assets/7ede17a6-5ef0-42d1-a581-d68428819934" />
 
-El mismo procedimiento fue aplicado tanto en **R1 como en R3**, designando a uno como **router activo** y al otro como **router en espera (standby)**.
+El mismo procedimiento fue aplicado tanto en **R1 como en R3**, designando a uno como **router activo** y al otro como **router en espera (standby).
+
 ---
 ## Funcionamiento esperado
 

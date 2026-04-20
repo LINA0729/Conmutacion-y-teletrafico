@@ -4,7 +4,6 @@
 
 El taller tuvo como fin implementar el protocolo **HSRP (Hot Standby Router Protocol)** a fin de dar redundancia a la puerta de enlace predeterminada de una red LAN. Este protocolo permite que dos routers trabajen juntos compartiendo una **IP virtual**, de forma que los hosts utilicen una única puerta de enlace lógica, independientemente de qué router esté activo.
 
-Los routers **R1 y R3** fueron configurados como gateways redundantes para la red LAN en la topología propuesta, mientras que el router **R2** actuaba como router intermedio hacia otras redes.
 ---
 
 ## Configuración realizada

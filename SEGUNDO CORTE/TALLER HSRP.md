@@ -21,8 +21,12 @@ La configuración hecha en los routers fue:
 - Habilitar la opción `preempt` para poder recuperar el router con mayor prioridad
 
 <img width="921" height="365" alt="image" src="https://github.com/user-attachments/assets/7ede17a6-5ef0-42d1-a581-d68428819934" />
+<img width="657" height="262" alt="image" src="https://github.com/user-attachments/assets/66c52bd9-a53e-47a5-8f62-19ef8366a28b" />
 
 El mismo procedimiento fue aplicado tanto en **R1 como en R3**, designando a uno como **router activo** y al otro como **router en espera (standby).
+
+Configuración switches.
+<img width="692" height="159" alt="image" src="https://github.com/user-attachments/assets/557e8b35-1b62-4d3a-9c26-c44f3be2953b" />
 
 ---
 ## Funcionamiento esperado
@@ -39,8 +43,8 @@ Con HSRP configurado correctamente:
 
 Se verificó el estado de las interfaces en los routers a través de comandos como:
 
-
 Verificando que las interfaces estuviesen en estado **up/up**, lo que indica conectividad básica operativa.
+
 ---
 
 ## Limitaciones encontradas

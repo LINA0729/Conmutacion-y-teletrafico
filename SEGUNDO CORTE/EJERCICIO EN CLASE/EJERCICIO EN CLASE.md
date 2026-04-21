@@ -23,6 +23,7 @@ Se capturó el tráfico generado durante la descarga de los componentes del mode
 * **Acción**: Se cargó el modelo `yolov8n.pt`, lo que activó una conexión **TCP**.
 * **Resultado**: Captura exitosa del tráfico fiable orientado a la conexión.
 <img width="1197" height="402" alt="image" src="https://github.com/user-attachments/assets/2b1a1e79-a476-4df7-b2ed-ab21fd224ae7" />
+<img width="926" height="747" alt="image" src="https://github.com/user-attachments/assets/6bdc0c84-2ddb-451b-ae2f-ac398037f53f" />
 
 
 ### 3. Fase 2: Transmisión de Video (Tráfico UDP)
@@ -32,6 +33,9 @@ Se simuló la transmisión de datos de una cámara web para analizar el tráfico
 <img width="697" height="567" alt="image" src="https://github.com/user-attachments/assets/17d0c2bb-9b28-40a0-86c7-bd0e0f834a2f" />
 
 * **Incidencia Técnica**: En esta fase, la captura en la interfaz `eth0` no registró el tráfico debido a que el script enviaba datos a la dirección de **loopback** (`127.0.0.1`). El tráfico local no atraviesa la interfaz de red principal `eth0`, lo que explica por qué el archivo resultante no contenía los datagramas esperados.
+
+* **Problemas encontrados:** A pesar de cambiar la interfaz de captura a lo0 (loopback), tcpdump no logró capturar el tráfico UDP correctamente en Google Colab. El tráfico generado fue capturado en el archivo .pcap, pero el archivo solo contenía paquetes vacíos de 24 bytes, lo que sugiere que tcpdump no pudo captar el tráfico generado.
+
 <img width="680" height="212" alt="image" src="https://github.com/user-attachments/assets/e3bb81ef-f233-43ab-86cb-54867765109d" />
 ---
 
@@ -53,7 +57,10 @@ Se simuló la transmisión de datos de una cámara web para analizar el tráfico
 ### **4. Identificación del Origen**
 Para aislar el tráfico específico del servidor en Wireshark, se pueden utilizar los filtros de visualización de direcciones IP:
 * `ip.src == [IP_Servidor]`: Para ver los paquetes que el servidor envía al equipo.
+<img width="630" height="402" alt="image" src="https://github.com/user-attachments/assets/486a0a88-5fbe-4e13-a241-3b5989a63f31" />
+
 * [cite_start`ip.dst == [IP_Servidor]`: Para ver los paquetes enviados desde el equipo hacia el servidor.
+<img width="637" height="295" alt="image" src="https://github.com/user-attachments/assets/89d2599d-0f2d-405c-ab88-b5f3e27afd01" />
 
 ---
 

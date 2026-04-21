@@ -1,4 +1,3 @@
-Aquí tienes el contenido completo y estructurado para tu archivo `README.md`. [cite_start]He organizado las secciones para que el desarrollo técnico y el análisis teórico queden separados, facilitando la lectura y cumpliendo con todos los puntos solicitados en la guía del ejercicio[cite: 102, 109].
 
 ---
 

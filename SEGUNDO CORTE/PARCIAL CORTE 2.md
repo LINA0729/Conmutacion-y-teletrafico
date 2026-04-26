@@ -1,8 +1,11 @@
 # Parcial 2: Conmutación y Teletráfico
 
 **Curso:** Conmutación y teletrafico.
+
 **Universidad:** Fundación Universitaria Compensar.
+
 **Docente:** Diego Alejandro Barragán Vargas.
+
 **Autores:** Lina Marcela Contreras Sanabria.
 
 ---

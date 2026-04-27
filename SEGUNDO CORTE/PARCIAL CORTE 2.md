@@ -453,24 +453,25 @@ En un entorno real (router Linux o Cisco) se usaría iptables para contar el tr�
 
 Crear la regla:
 
-´´´ bash
+``` bash
 iptables -F INPUT
 iptables -Z
 iptables -A INPUT -p udp --dport 5555 -j ACCEPT
-´´´
+```
 
 Leer los contadores después de correr YOLO:
-´´´bash
+
+```bash
 iptables -L INPUT -v -n
-´´´
+```
 
 Salida esperada:
 
-´´´
+```
 Chain INPUT (policy ACCEPT 0 packets, 0 bytes)
  pkts bytes target  prot opt in  out  source     destination
    30  2100 ACCEPT  udp  --  *   *    0.0.0.0/0  0.0.0.0/0   udp dpt:5555
-´´´
+```
 
 Explicacón:
 

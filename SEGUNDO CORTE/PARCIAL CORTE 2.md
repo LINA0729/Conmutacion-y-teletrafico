@@ -301,6 +301,19 @@ Para detectar el top talker en 5 minutos se usa IP Accounting con iptables: se c
 
 ---
 
+# Parte de Empirica
+
+**Instalación**
+Primero instalo lo que necesito, en colab ya viene python pero toca instalar las librerías de yolo y las herramientas de red.
+
+bash ```
+!pip install ultralytics
+!pip install matplotlib
+!apt-get install -y tcpdump
+!apt-get install -y iptables
+```
+
+---
 ## Conclusiones
 
 Este parcial integra:

@@ -502,6 +502,7 @@ sock_flood.close()
 time.sleep(1)
 print("listo")
 ```
+<img width="543" height="307" alt="image" src="https://github.com/user-attachments/assets/9ad88585-14b2-4df9-b446-d2b0c62e4f01" />
 
 ahora leo los contadores:
 
@@ -515,40 +516,6 @@ salida después del flood:
 ```
 
 los paquetes pasaron de 30 a 330 y los bytes de 2100 a 14000, ese aumento tan brusco es lo que en un sistema real dispararía una alerta de posible ataque o congestión
-
----
-
-## Gráfica con matplotlib
-
-```python
-import matplotlib.pyplot as plt
-
-# datos de ejemplo basados en lo que capturó yolo
-frames = list(range(30))
-detecciones = [2, 3, 2, 4, 3, 2, 1, 3, 4, 2, 3, 2, 3, 4, 3,
-               2, 3, 2, 4, 3, 2, 3, 2, 1, 3, 4, 3, 2, 3, 2]
-
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
-
-# grafico de detecciones por frame
-ax1.plot(frames, detecciones, color='steelblue', marker='o', markersize=3)
-ax1.set_title('detecciones por frame')
-ax1.set_xlabel('frame')
-ax1.set_ylabel('objetos detectados')
-ax1.grid(alpha=0.3)
-
-# grafico de bytes acumulados (normal vs flood)
-categorias = ['tráfico normal\n(YOLO 30 frames)', 'después del flood\n(300 paquetes extra)']
-bytes_val = [2100, 14000]
-colores = ['steelblue', 'tomato']
-ax2.bar(categorias, bytes_val, color=colores, width=0.5)
-ax2.set_title('IP Accounting — bytes contabilizados')
-ax2.set_ylabel('bytes')
-
-plt.tight_layout()
-plt.savefig('dashboard.png', dpi=100)
-plt.show()
-```
 
 ---
 
@@ -599,19 +566,3 @@ while cap.isOpened():
 la ventaja en un enlace lento es que reduce el tráfico de monitoreo un 90% sin perder la idea general de lo que está pasando. si el enlace es de 1 Mbps y el monitoreo consume 200 Kbps, con sFlow solo consumiría 20 Kbps, dejando más ancho de banda para el video y las detecciones reales
 
 ---
-
-*Segundo Parcial 2025 — Conmutación y Teletráfico*
-
-
-
----
-## Conclusiones
-
-Este parcial integra:
-
-1. **Conceptos teóricos**: NetFlow, sFlow, 5-tuple, IP Accounting
-2. **Arquitectura de redes**: Redundancia, QoS, virtualización
-3. **Implementación práctica**: Scripts Python, iptables, tcpdump
-4. **Monitoreo real**: Detección de anomalías, análisis de top talkers
-
-La combinación de YOLO (visión por computadora) + NetFlow (monitoreo de red) crea un sistema educativo completo para entender cómo funcionan los colectores de flujos en redes modernas.

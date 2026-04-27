@@ -88,7 +88,7 @@ Flujo	Análisis
 Asimetría Extrema: 192.168.1.10 ↔ 10.0.0.5
 Enviados (downstream):  1500 paquetes = 120,000 bytes
 Recibidos (upstream):   50 paquetes   = 4,000 bytes
-
+```
 ---
 
 # Parte de Diseño
@@ -112,169 +112,53 @@ Recibidos (upstream):   50 paquetes   = 4,000 bytes
 
 ### Diagrama Conceptual
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                      COLAB ENVIRONMENT                   │
-├─────────────────────────────────────────────────────────┤
-│                                                           │
-│  ┌──────────────────┐      ┌──────────────────┐         │
-│  │   Cámara USB     │      │   Contenedor     │         │
-│  │   (simulada)     │─────▶│   Docker YOLO    │         │
-│  │   Video: MP4     │      │                  │         │
-│  └──────────────────┘      │ • Detect objects │         │
-│                            │ • UDP to VM:5555 │         │
-│                            └────────┬─────────┘         │
-│                                     │                    │
-│                            ┌────────▼─────────┐         │
-│                            │  Exportador       │         │
-│                            │  NetFlow          │         │
-│                            │  (softflowd)      │         │
-│                            └────────┬─────────┘         │
-│                                     │                    │
-│                            ┌────────▼─────────┐         │
-│                            │  Colector         │         │
-│                            │  NetFlow          │         │
-│                            │  (nfdump)         │         │
-│                            └────────┬─────────┘         │
-│                                     │                    │
-│                            ┌────────▼─────────┐         │
-│                            │  Dashboard        │         │
-│                            │  Streamlit/       │         │
-│                            │  Matplotlib       │         │
-│                            └───────────────────┘         │
-│                                                           │
-└─────────────────────────────────────────────────────────┘
-```
+<img width="1122" height="417" alt="image" src="https://github.com/user-attachments/assets/a372ea3d-4178-41f0-8051-4593f7237941" />
+
+**Entorno Colab (YOLO)**
+
+- Docker
+- YOLOv8n
+- Python
+  
+El script lee el video con OpenCV, aplica el modelo YOLO y por cada detección genera un JSON con timestamp, clase y confianza. Lo despacha por UDP a 127.0.0.1:5555.
+
+**Procesamiento y visualización**
+
+- softflowd
+- nfdump
+- Streamlit
+  
+El exportador escucha en UDP:5555 y convierte el tráfico en flujos NetFlow v5. El colector los recibe, los almacena y los expone al dashboard que muestra top talkers, bytes/s y alertas.
 
 ### Flujo de Datos
 
-```
-Video Input
-    ↓
-[YOLO Detection] ← detecta peatones, vehículos
-    ↓
-[Metadata JSON] ← {timestamp, clase, confianza, bbox}
-    ↓
-[UDP 127.0.0.1:5555] ← tráfico de red
-    ↓
-[NetFlow Exporter] ← agrupa en flujos
-    ↓
-[NetFlow Collector] ← recibe flujos
-    ↓
-[Dashboard] ← visualiza top talkers
-```
+Cámara USB (video MP4)
+→
+Contenedor Docker + YOLO
+→
+Exportador NetFlow (softflowd)
+→
+Colector NetFlow (nfdump)
+→
+Dashboard (Streamlit / Matplotlib)
 
-### Respuestas a Preguntas de Diseño 2.a
+La cámara simulada en Colab reproduce un video MP4 fotograma a fotograma. YOLO procesa cada fotograma, extrae las detecciones (vehículos y peatones) y las traduce a mensajes JSON para ser transmitidos por UDP al puerto 5555. El exportador organiza esos paquetes en flujos NetFlow, que son analizados por el colector y observados en tiempo real desde el panel de control.
 
-#### ¿Cómo comunicaría el contenedor YOLO con la VM?
+## **Respuestas — preguntas de diseño 2.a**
 
-**Opción 1: UDP directo (Recomendado para este escenario)**
+**¿Cómo comunicaría el contenedor YOLO con la VM para que el tráfico sea muestreado por NetFlow?**
 
-```python
-# En script YOLO
-import socket
+Se emplea UDP directo (protocolo 17) desde el contenedor hasta la dirección IP de la VM, a través del puerto 5555. UDP es apropiado en este caso debido a que las detecciones son mensajes de tamaño reducido (alrededor de 200 bytes), la latencia debe ser baja y no requerimos la garantía de entrega que TCP brinda, ya que se puede tolerar una pérdida ocasional de paquetes. Softflowd recoge el tráfico que produce este socket UDP para crear los flujos NetFlow.
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-vm_ip = "10.0.1.100"  # IP de VM
-vm_port = 5555
 
-# Por cada detección
-metadata = json.dumps({
-    "timestamp": time.time(),
-    "detections": [
-        {"class": "person", "conf": 0.95},
-        {"class": "vehicle", "conf": 0.87}
-    ]
-})
+**Proponga una regla de IP Accounting (iptables/nftables) para medir el tráfico entre el contenedor y la VM.**
 
-sock.sendto(metadata.encode(), (vm_ip, vm_port))
-```
+Se crea una cadena personalizada en iptables llamada MONITOR. Se agrega una regla que coincide con origen 10.0.1.50 (contenedor), destino 10.0.1.100 (VM) por UDP puerto 5555. Esto permite contar paquetes y bytes sin bloquear el tráfico. Con iptables -L MONITOR -v -n -x se leen los contadores acumulados en tiempo real.
 
-**Opción 2: TCP para garantizar entrega**
 
-```python
-import socket
+**Dibuje el flujo de datos: cámara → YOLO → exportador NetFlow → colector → dashboard.**
 
-tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-tcp_socket.connect((vm_ip, 5555))
-tcp_socket.send(metadata.encode())
-tcp_socket.close()
-```
-
-**Ventajas UDP:**
-- Menor latencia
-- Menor overhead
-- Tolera pérdida ocasional (alertas)
-
-#### Regla de IP Accounting en iptables
-
-```bash
-# Crear cadena para monitoreo
-sudo iptables -N MONITOR
-
-# Contar tráfico entre contenedor y VM
-sudo iptables -A MONITOR -s 10.0.1.50 -d 10.0.1.100 -p udp --dport 5555 -j ACCEPT
-sudo iptables -A MONITOR -s 10.0.1.100 -d 10.0.1.50 -j ACCEPT
-
-# Aplicar a INPUT
-sudo iptables -A INPUT -j MONITOR
-
-# Visualizar estadísticas
-sudo iptables -L MONITOR -v -n -x
-
-# Ejemplo salida:
-# Chain MONITOR (2 references)
-# pkts bytes target  prot opt in out source  destination
-# 150  65536 ACCEPT  udp  --  *   *   10.0.1.50  10.0.1.100
-```
-
-#### Flujo de Datos Detallado
-
-```
-┌─────────────────────────┐
-│  Cámara USB (archivo)   │
-│  test.mp4 @ 30fps       │
-└────────────┬────────────┘
-             │
-             ▼
-┌─────────────────────────────────┐
-│  YOLO Detection                 │
-│  • Procesa cada frame           │
-│  • Genera detecciones JSON      │
-│  • Crea 5-tuple UDP             │
-└─────────────┬───────────────────┘
-              │
-              │ UDP 127.0.0.1:5555
-              │ {timestamp, objects[]}
-              │
-              ▼
-┌─────────────────────────────────┐
-│  Exportador NetFlow             │
-│  • Escucha UDP:5555             │
-│  • Agrupa en flujos             │
-│  • Genera NetFlow v5/v9         │
-└─────────────┬───────────────────┘
-              │
-              │ NetFlow
-              │ (5-tuple + bytes/pkts)
-              │
-              ▼
-┌─────────────────────────────────┐
-│  Colector NetFlow               │
-│  • Recibe flujos                │
-│  • Almacena en BD               │
-│  • Calcula estadísticas         │
-└─────────────┬───────────────────┘
-              │
-              ▼
-┌─────────────────────────────────┐
-│  Dashboard Interactivo          │
-│  • Top Talkers (IP origen)      │
-│  • Bytes/sec por flujo          │
-│  • Timeline de actividad        │
-│  • Alertas de anomalías         │
-└─────────────────────────────────┘
-```
+El flujo está representado en el diagrama de arriba. En resumen: el video entra frame a frame → YOLO detecta objetos y serializa la detección en JSON → se envía como paquete UDP → softflowd lo agrupa en un flujo de 5 campos (5-tuple) → nfdump lo recibe y almacena → el dashboard consulta los datos y grafica top talkers, bytes/segundo y línea de tiempo de actividad.
 
 ---
 
@@ -299,6 +183,7 @@ sudo iptables -L MONITOR -v -n -x
 - QoS y monitoreo NetFlow/IP Accounting
 
 ### Diagrama de Arquitectura Detallado
+<img width="305" height="826" alt="image" src="https://github.com/user-attachments/assets/abd257a8-f99b-4567-a07e-3c73a789d902" />
 
 
 ### Asignación de IPs (Red 10.0.0.0/24)

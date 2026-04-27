@@ -176,6 +176,9 @@ El flujo está representado en el diagrama de arriba. En resumen: el video entra
 | C4 | Detección de animales | YOLOv8 | Clase animal + bbox |
 | C5 | Objetos perdidos | YOLOv8 | Maletas, mochilas |
 
+Cada contenedor recibe el stream de video desde la fuente RTSP externa (o archivos), procesa con su modelo YOLO especializado y envía el resultado (video anotado + metadata JSON) por TCP al switch virtual.
+
+
 **Infraestructura:**
 - 2 VMs (colector principal + respaldo)
 - Switch virtual con redundancia
@@ -183,7 +186,7 @@ El flujo está representado en el diagrama de arriba. En resumen: el video entra
 - QoS y monitoreo NetFlow/IP Accounting
 
 ### Diagrama de Arquitectura Detallado
-<img width="305" height="826" alt="image" src="https://github.com/user-attachments/assets/abd257a8-f99b-4567-a07e-3c73a789d902" />
+<img width="751" height="721" alt="image" src="https://github.com/user-attachments/assets/21cfc13f-a407-4971-8048-6ab4388d8a0d" />
 
 
 ### Asignación de IPs (Red 10.0.0.0/24)
@@ -227,55 +230,13 @@ BD centralizada
 Dashboard + Alertas
 ```
 
-### Configuración de QoS
+### Configuración de QoS e IP Accounting para Contenedores
 
-```bash
-# En Open vSwitch - Garantizar ancho de banda mínimo
-ovs-vsctl set Port eth0 qos=@newqos \
-  -- --id=@newqos create QoS \
-     type=linux-htb \
-     other-config:max-rate=1000000000
-
-# Limitar tráfico por contenedor
-ovs-vsctl -- \
-  set queue @newqueue \
-  other-config:max-rate=100000000 \
-  -- add qos @newqos queues
-
-# Prioridad para tráfico crítico (video)
-# Prioridad baja para monitoreo
-```
-
-### Configuración de IP Accounting para Contenedores
-
-```bash
-# Crear cadena para medir tráfico por contenedor
-sudo iptables -N CONTAINER_STATS
-
-# C1: Placas
-sudo iptables -A CONTAINER_STATS -s 10.0.0.11 -j ACCEPT
-
-# C2: Parqueadero
-sudo iptables -A CONTAINER_STATS -s 10.0.0.12 -j ACCEPT
-
-# C3: Aforo
-sudo iptables -A CONTAINER_STATS -s 10.0.0.13 -j ACCEPT
-
-# C4: Animales
-sudo iptables -A CONTAINER_STATS -s 10.0.0.14 -j ACCEPT
-
-# C5: Objetos perdidos
-sudo iptables -A CONTAINER_STATS -s 10.0.0.15 -j ACCEPT
-
-# Aplicar a OUTPUT
-sudo iptables -A OUTPUT -j CONTAINER_STATS
-
-# Ver estadísticas por contenedor
-sudo iptables -L CONTAINER_STATS -v -n -x
-
-# Limpiar cada 5 minutos (con cron)
-# */5 * * * * iptables -Z CONTAINER_STATS && logger "Estadísticas reseteadas"
-```
+- HTB QoS
+- iptables
+- NetFlow v5
+  
+Open vSwitch aplica QoS tipo HTB para garantizar ancho de banda mínimo a cada contenedor (100 Mbps) y priorizar el tráfico de video sobre el de metadata. iptables registra los bytes de cada IP origen con cadena CONTAINER_STATS, reseteada cada 5 minutos por cron para detectar el top talker del período.
 
 ### Preguntas de Diseño 2.b - Análisis de Throughput
 
@@ -315,13 +276,7 @@ Metadata: 5 × 16 Kbps = 80 Kbps
 TOTAL:                 60.08 Mbps
 ```
 
-#### Protocolo Adecuado: UDP vs TCP
-
-**Condiciones de red:**
-```
-Latencia base: 2 ms
-Jitter: ±1 ms (rango 1-3 ms)
-```
+#### Con latencia base 2 ms y jitter ±1 ms, ¿UDP o TCP para el video? ¿Cómo se mitiga el jitter?
 
 **Análisis:**
 
@@ -330,7 +285,7 @@ Jitter: ±1 ms (rango 1-3 ms)
 | **Latencia** | 2ms (mínima) | 2ms + handshake (más) |
 | **Retransmisión** | No | Sí (resincroniza) |
 | **Overhead** | Mínimo | Secuencias, ACKs |
-| **Para Video** | ✅ Óptimo | ❌ Excesivo |
+| **Para Video** | Óptimo | Excesivo |
 | **Tolerancia pérdida** | Sí | No (busca perfección) |
 
 **Decisión: UDP es más adecuado**
@@ -340,174 +295,9 @@ Justificación:
 - TCP añadiría latencia por retransmisiones
 - Jitter es pequeño (±1ms) → UDP lo maneja bien
 
-**Mitigación de Jitter en Receptor:**
-
-```python
-from collections import deque
-import time
-
-class JitterBuffer:
-    def __init__(self, buffer_size=3):
-        """Buffer circular para absorber jitter"""
-        self.buffer = deque(maxlen=buffer_size)
-        self.target_delay = 0.033  # 33ms para 30fps
-        
-    def add_frame(self, frame, timestamp):
-        """Añade frame al buffer"""
-        self.buffer.append((frame, timestamp))
-    
-    def get_frame(self):
-        """Retorna frame cuando está listo"""
-        if len(self.buffer) >= self.target_delay / 0.033:
-            return self.buffer.popleft()[0]
-        return None
-
-# Uso
-jitter_buf = JitterBuffer(buffer_size=3)
-
-while True:
-    frame, ts = receive_udp_frame()
-    jitter_buf.add_frame(frame, ts)
-    
-    display_frame = jitter_buf.get_frame()
-    if display_frame:
-        process_and_display(display_frame)
-    
-    time.sleep(0.033)  # 30fps
-```
-
-**Técnicas adicionales:**
-1. **Interpolación de frames**: llenar gaps con frames intermedios
-2. **Reordenamiento**: buffer secuencial por timestamp
-3. **PLC (Packet Loss Concealment)**: duplicar últimos datos válidos
-
 #### Regla NetFlow para Medir Tráfico por Contenedor
 
-**Configuración en softflowd:**
-
-```bash
-# Exportar flujos agrupados por IP origen
-softflowd -i eth0 \
-  -n 10.0.0.30:2055 \
-  -v 5 \
-  -A auto
-
-# Genera flujos con 5-tuple:
-# src_ip=10.0.0.11 | dst_ip=10.0.0.30 | port_src=random | port_dst=9001 | proto=TCP
-```
-
-**Análisis con nfdump:**
-
-```bash
-# Ver top talkers (contenedores que más envían)
-nfdump -r flujos.nf -s srcip/bytes | head -5
-
-# Salida esperada:
-# IP_src                Bytes      Packets
-# 10.0.0.11            12,000,000  3,000  (C1 - placas)
-# 10.0.0.12            11,900,000  2,980  (C2 - parqueadero)
-# 10.0.0.13            11,800,000  2,950  (C3 - aforo)
-# 10.0.0.14             2,400,000    600  (C4 - animales, menos tráfico)
-# 10.0.0.15             2,100,000    525  (C5 - objetos perdidos)
-```
-
-**IP Accounting: Detectar Mayor Consumidor en 5 Minutos**
-
-```bash
-# Método 1: Con iptables (en tiempo real)
-# Crear regla para cada contenedor
-for i in {11..15}; do
-  sudo iptables -A OUTPUT -s 10.0.0.$i -j ACCEPT
-done
-
-# Leer cada 5 minutos
-while true; do
-  echo "=== Estadísticas ($(date)) ==="
-  sudo iptables -L OUTPUT -v -n | grep "10.0.0\." | sort -k2 -rn | head -1
-  sleep 300
-done
-
-# Método 2: Script Python (más completo)
-```
-
-**Script Python para monitoreo IP Accounting:**
-
-```python
-#!/usr/bin/env python3
-import subprocess
-import json
-from datetime import datetime
-from collections import defaultdict
-
-def get_iptables_stats():
-    """Obtiene estadísticas de iptables"""
-    result = subprocess.run(
-        ['sudo', 'iptables', '-L', 'OUTPUT', '-v', '-n', '-x'],
-        capture_output=True,
-        text=True
-    )
-    
-    stats = defaultdict(lambda: {'pkts': 0, 'bytes': 0})
-    
-    for line in result.stdout.split('\n'):
-        if '10.0.0.' in line:
-            parts = line.split()
-            if len(parts) >= 2:
-                pkts = int(parts[0])
-                bytes_val = int(parts[1])
-                # Extraer IP destino
-                if 'destination' in line.lower():
-                    ip = parts[-1]
-                    container = {
-                        '10.0.0.11': 'C1-Placas',
-                        '10.0.0.12': 'C2-Parqueadero',
-                        '10.0.0.13': 'C3-Aforo',
-                        '10.0.0.14': 'C4-Animales',
-                        '10.0.0.15': 'C5-ObjPerdidos'
-                    }.get(ip, ip)
-                    stats[container]['bytes'] += bytes_val
-                    stats[container]['pkts'] += pkts
-    
-    return stats
-
-def main():
-    print("Monitoreo de IP Accounting (cada 5 minutos)")
-    print("=" * 60)
-    
-    while True:
-        stats = get_iptables_stats()
-        
-        # Ordenar por bytes (descendente)
-        sorted_stats = sorted(
-            stats.items(),
-            key=lambda x: x[1]['bytes'],
-            reverse=True
-        )
-        
-        print(f"\n{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"{'Contenedor':<20} {'Bytes':>15} {'Paquetes':>12}")
-        print("-" * 50)
-        
-        max_bytes_container = None
-        max_bytes = 0
-        
-        for container, data in sorted_stats:
-            bytes_val = data['bytes']
-            pkts = data['pkts']
-            print(f"{container:<20} {bytes_val:>15,} {pkts:>12,}")
-            
-            if bytes_val > max_bytes:
-                max_bytes = bytes_val
-                max_bytes_container = container
-        
-        print("-" * 50)
-        print(f"🔴 TOP TALKER: {max_bytes_container} ({max_bytes:,} bytes)")
-        
-        subprocess.run(['sleep', '300'])
-
-if __name__ == "__main__":
-    main()
-```
+Para detectar el top talker en 5 minutos se usa IP Accounting con iptables: se crea una regla por cada IP de contenedor (10.0.0.11 a 10.0.0.15) en la cadena CONTAINER_STATS. Cada 5 minutos un script lee los contadores con iptables -L -v -n -x, ordena por bytes de mayor a menor e identifica el contenedor que más tráfico generó. Luego limpia los contadores con iptables -Z para el siguiente período. Con nfdump también se puede ejecutar nfdump -r flujos.nf -s srcip/bytes para ver los top talkers históricos por IP origen.
 
 ---
 
@@ -521,9 +311,3 @@ Este parcial integra:
 4. **Monitoreo real**: Detección de anomalías, análisis de top talkers
 
 La combinación de YOLO (visión por computadora) + NetFlow (monitoreo de red) crea un sistema educativo completo para entender cómo funcionan los colectores de flujos en redes modernas.
-
----
-
-**Versión**: 1.0  
-**Última actualización**: 2026-04-26  
-**Autor**: Lina - Fundación Universitaria Compensar

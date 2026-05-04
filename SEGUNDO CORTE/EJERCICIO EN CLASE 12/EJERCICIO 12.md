@@ -1,131 +1,111 @@
 # Ejercicio 12 
 
-## Descripción del proyecto
+# ASISTENTE DE SEGURIDAD EN REDES
 
-**ASISTENTE DE SEGURIDAD DE REDES** es una aplicación modular que simula las capacidades de un orquestador de seguridad y gestión de infraestructura de redes empresariales convergentes (voz, video, datos e IoT).
+## ¿QUÉ ES?
 
-El sistema actúa como asistente para ingenieros de infraestructura, cubriendo desde la generación de configuraciones multi-vendor hasta la respuesta automática ante incidentes de seguridad.
+Un programa en Python que simula 5 módulos de seguridad e infraestructura de redes empresariales.
 
----
+## CÓMO USAR
 
-## Objetivo general
+### Requisitos
+- Python 3.7 o superior
+- Nada más (solo librerías estándar)
 
-Diseñar e implementar, a partir de un prompt base, un software extensible que permita:
+## QUÉ HACE
 
-1. Generar plantillas de configuración para dispositivos Cisco, Fortinet y Huawei.
-2. Visualizar dashboards de disponibilidad, rendimiento y eventos en tiempo real.
-3. Analizar tráfico de voz, video e IoT con métricas de QoS (jitter, latencia, MOS).
-4. Gestionar VLAN Voice y segmentos de red con tráfico sensible al retardo.
-5. Aplicar ACLs dinámicas como respuesta automática ante tráfico anómalo.
+El programa ejecuta automáticamente estos 5 módulos:
 
----
+### 1️. Generador de Comandos
+- Crea comandos reales para Cisco, Fortinet y Huawei
+- Valida IPs y VLANs (1-4094)
+- Listo para copiar-pegar en un router
 
-## Módulos operativos
+### 2️. Dashboard de Seguridad
+- Muestra disponibilidad de nodos (UP/DOWN)
+- CPU, memoria e interfaces de red
+- Estado de túneles VPN
+- Alertas de seguridad
 
-### Módulo 1 — Configuración Multi-Vendor
-Generador automático de comandos para **Fortinet FortiOS**, **Cisco IOS/IOS-XE** y **Huawei VRP**.
+### 3️. Análisis de Tráfico
+- Simula flujos VoIP (SIP/RTP)
+- Simula tráfico IoT (MQTT/Modbus)
+- Calcula latencia, jitter y pérdida
+- Calcula MOS (calidad de voz)
 
-Genera configuraciones reales para:
-- Reglas de firewall y políticas de acceso
-- Túneles IPsec / SSL-VPN
-- Hardening de interfaces (deshabilitar servicios inseguros)
-- VLAN voice con CoS/DSCP
-- ACLs estándar y extendidas
-- QoS: DSCP marking, traffic policing
+### 4️. Segmentación de VLANs
+- Crea VLAN de Invitados (aislada)
+- VLAN Corporativa (acceso total)
+- VLAN IoT (restringida)
+- VLAN Voice (prioridad alta)
 
-**Uso:**
-```bash
-python -m modules.config_generator --vendor cisco --feature vlan_voice --vlan-id 10 --ip-range 192.168.10.0/24
+### 5️. Detección de Ataques
+- Simula ataques (port scan, DoS, SYN flood)
+- Genera ACLs de bloqueo automático
+- Registra todo en logs
+
+## EJEMPLO DE SALIDA
+
+Cuando ejecutas el programa, verás:
+
+```
+MÓDULO 1: CONFIGURACIÓN MULTI-VENDOR
+✓ Comandos Cisco IOS generados
+✓ Comandos Fortinet FortiOS generados
+✓ Comandos Huawei VRP generados
+
+MÓDULO 2: DASHBOARD DE POSTURA DE SEGURIDAD
+✓ Router-Core       | 10.0.1.1      | Latencia: 15ms | Pérdida: 0%
+✓ Switch-Main      | 10.0.1.5      | Latencia: 10ms | Pérdida: 0%
+...
+
+MÓDULO 3: ANALIZADOR DE TRÁFICO CRÍTICO
+[FLUJO VoIP - RTP]
+MOS Score: 4.25 (Excelente)
+Latencia: 45ms | Jitter: 12ms | Pérdida: 0.5%
+
+[FLUJO IoT - MQTT/Modbus]
+Latencia: 25ms | Jitter: 8ms | Pérdida: 0.1%
+...
 ```
 
----
+## ESTRUCTURA DEL CÓDIGO
 
-### Módulo 2 — Dashboard de Postura de Seguridad
-Interfaz visual (web o CLI) con actualización en tiempo real cada 5-30 segundos.
-
-Métricas mostradas:
-- Disponibilidad de nodos (ICMP/ping simulado): latencia y pérdida de paquetes
-- Recursos de dispositivos (SNMP simulado): CPU %, memoria %, tráfico de interfaces
-- Estado de túneles VPN: activo/inactivo, uptime, bytes transferidos
-- Registro de eventos con nivel de severidad (INFO / WARNING / CRITICAL)
-
-**Uso:**
-```bash
-python -m modules.dashboard --mode web --port 8080
-# o en modo CLI:
-python -m modules.dashboard --mode cli
+```
+netops_orchestrator.py
+│
+├── ConfigGenerator()        → Genera comandos
+├── SecurityDashboard()      → Muestra métricas
+├── TrafficAnalyzer()        → Analiza tráfico
+├── DynamicSegmentation()    → Crea VLANs
+├── IncidentResponse()       → Detecta ataques
+└── main()                   → Ejecuta todo
 ```
 
----
+## VALIDACIÓN
 
-### Módulo 3 — Analizador de Tráfico Crítico (IoT/Edge)
-Captura y analiza paquetes sintéticos generados con Scapy.
+* Genera comandos válidos para Cisco, Fortinet, Huawei
+* Dashboard muestra métricas simuladas en tiempo real
+* Analizador calcula latencia, jitter y MOS
+* Crea 4 perfiles de VLAN con comandos de configuración
+* Detecta ataques y genera ACLs de bloqueo
+* Todos los eventos tienen timestamp y severidad  
 
-Tipos de tráfico simulados:
-- **VoIP:** SIP + RTP (codec G.711)
-- **Video:** RTSP/RTP
-- **IoT industrial:** Modbus TCP, MQTT
-- **Administrativo:** SSH, HTTPS
+## CLASES PRINCIPALES
 
-Métricas calculadas:
-- Latencia (ms), Jitter (ms), Pérdida de paquetes (%)
-- **MOS estimado** para VoIP mediante E-Model simplificado
-- Alertas automáticas si latencia VoIP > 150 ms o pérdida > 1%
+- **ConfigGenerator:** Valida IPs/VLANs y genera comandos
+- **SecurityDashboard:** Simula métricas de red
+- **TrafficAnalyzer:** Calcula QoS (MOS, latencia, jitter)
+- **DynamicSegmentation:** Crea perfiles de VLAN
+- **IncidentResponse:** Detecta ataques y bloquea
 
-**Uso:**
-```bash
-python -m modules.traffic_analyzer --type voip --duration 60 --report json
+## EJEMPLO RÁPIDO
+
+```python
+# Generar configuración Cisco
+from netops_orchestrator import ConfigGenerator
+
+gen = ConfigGenerator()
+config = gen.cisco_config(10, "Corporativa", "Gi0/0/1", "10.10.1.1", "255.255.255.0")
+print(config)
 ```
-
----
-
-### Módulo 4 — Gestión de Segmentación Dinámica
-Crea y gestiona VLANs segmentadas con políticas de aislamiento automáticas.
-
-Perfiles preconfigurados:
-| VLAN | ID | Política | Prioridad |
-|------|----|----------|-----------|
-| Voice | 10 | Solo PBX y PSTN GW | CoS 5 / DSCP EF (46) |
-| Corporativa | 20 | Acceso completo + ACLs | DSCP CS2 |
-| IoT | 30 | Solo servidores autorizados | DSCP EF (46) |
-| Invitados | 40 | Solo internet, aislada | DSCP CS0 |
-
-Genera comandos de puertos acceso/trunk para Cisco y Huawei listos para copiar.
-
-**Uso:**
-```bash
-python -m modules.vlan_manager --create voice --vlan-id 10 --vendor cisco
-```
-
----
-
-### Módulo 5 — Respuesta ante Incidentes (ACLs Dinámicas)
-Sistema de detección y bloqueo automático ante tráfico anómalo simulado.
-
-Ataques simulados:
-- Escaneo de puertos (tipo Nmap sintético)
-- Flood UDP/ICMP (DoS simulado)
-- SYN flood / conexiones repetidas
-
-Flujo de respuesta:
-1. Detección por umbral (paquetes/segundo por IP origen)
-2. Generación automática de ACL extendida de bloqueo
-3. Aplicación en la interfaz simulada afectada
-4. Registro en base de datos (IP, protocolo, timestamps, evidencia)
-5. Opción de revisión manual, aprobación o reversión
-
-**Uso:**
-```bash
-python -m modules.incident_response --simulate dos --target 192.168.1.100 --auto-block
-```
-
----
-
-## Criterios de evaluación
-
-- [x] Comandos válidos generados para Cisco y Fortinet/Huawei
-- [x] Dashboard con métricas en tiempo real (datos sintéticos)
-- [x] Análisis de latencia/jitter/MOS en flujo RTP simulado
-- [x] VLANs Voice, IoT y Corporativa con comandos generados
-- [x] Detección de DoS simulado con ACL de bloqueo automática
-- [x] Todos los eventos registrados en BD con timestamps
